@@ -395,13 +395,15 @@ func executeTask() {
 	replyInfo := fmt.Sprintf("成功回复帖子: \n标题：%s, \n回帖：%s", postTitle, replyContent)
 
 	// 8. 发送通知
-	notificationMsg := fmt.Sprintf(
-		"✅ hjd2048 ✅，\n时间: %s\n%s\n%s\n%s",
-		time.Now().Format("2006-01-02 15:04:05"),
-		replyInfo,
-		checkInResult,
-		userInfo,
-	)
+	forumUsername := os.Getenv("FORUM_USERNAME")
+    notificationMsg := fmt.Sprintf(
+	  "✅ %s ✅\n时间: %s\n%s\n%s\n%s",
+	  forumUsername,
+	  time.Now().Format("2006-01-02 15:04:05"),
+	  replyInfo,
+	  checkInResult,
+	  userInfo,
+    )
 	if err := SendTelegramNotification(notificationMsg); err != nil {
 		log.Printf("发送通知失败: %v", err)
 		scheduleRetry("发送通知失败: " + err.Error())
@@ -1021,7 +1023,7 @@ func (b *Browser) GetUserInfo() (string, error) {
 		value := strings.TrimSpace(s.Find("th").First().Text())
 
 		// 只保存指定的四个信息
-		if key == "威望" || key == "金币" || key == "貢獻值" || key == "邀請幣" {
+		if key == "威望" || key == "金币" || key == "貢獻值" || key == "邀請幣" || key == "米粒" {
 			userInfo[key] = value
 		}
 	})
@@ -1031,7 +1033,7 @@ func (b *Browser) GetUserInfo() (string, error) {
 	sb.WriteString("📊 用户积分信息 📊\n")
 
 	// 按特定顺序添加关键信息
-	keyInfo := []string{"威望", "金币", "貢獻值", "邀請幣"}
+	keyInfo := []string{"威望", "金币", "貢獻值", "邀請幣", "米粒"}
 
 	for _, key := range keyInfo {
 		if value, ok := userInfo[key]; ok {
