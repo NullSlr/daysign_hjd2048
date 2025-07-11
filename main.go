@@ -459,13 +459,17 @@ func scheduleRetry(reason string) {
 		executeTask()
 	})
 
+	// 获取用户名
+        username := os.Getenv("FORUM_USERNAME")
+	
 	// 发送失败通知
 	failureMsg := fmt.Sprintf(
-		"❌ 任务失败 ❌\n时间: %s\n原因: %s\n将在 %d 分钟后重试",
-		time.Now().Format("2006-01-02 15:04:05"),
-		reason,
-		int(RetryInterval.Minutes()),
-	)
+	        "❌ %s 任务失败 ❌\n时间: %s\n原因: %s\n将在 %d 分钟后重试",
+	        username,
+	        time.Now().Format("2006-01-02 15:04:05"),
+	        reason,
+	        int(RetryInterval.Minutes()),
+        )
 
 	if err := SendTelegramNotification(failureMsg); err != nil {
 		log.Printf("发送失败通知失败: %v", err)
